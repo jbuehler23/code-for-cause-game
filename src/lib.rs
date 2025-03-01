@@ -1,6 +1,4 @@
-mod asset_tracking;
 pub mod audio;
-mod demo;
 #[cfg(feature = "dev")]
 mod dev_tools;
 mod screens;
@@ -11,6 +9,8 @@ use bevy::{
     audio::{AudioPlugin, Volume},
     prelude::*,
 };
+use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt};
+use screens::Screen;
 
 pub struct AppPlugin;
 
@@ -54,13 +54,11 @@ impl Plugin for AppPlugin {
                 }),
         );
 
+        // Init the loading state for assets that can later be used with `configure_loading_state`.
+        app.add_loading_state(LoadingState::new(Screen::Loading).continue_to_state(Screen::Title));
+
         // Add other plugins.
-        app.add_plugins((
-            asset_tracking::plugin,
-            demo::plugin,
-            screens::plugin,
-            theme::plugin,
-        ));
+        app.add_plugins((screens::plugin, theme::plugin));
 
         // Enable dev tools for dev builds.
         #[cfg(feature = "dev")]
