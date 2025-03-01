@@ -1,18 +1,7 @@
-use std::f32::consts::PI;
-
-use crate::{creature::Health, effect::Effect};
-use bevy::{
-    animation::{animated_field, AnimationTargetId},
-    ecs::component::StorageType,
-    prelude::*,
-};
-use bevy_rand::{
-    global::GlobalEntropy,
-    prelude::{Entropy, WyRand},
-};
-use rand::seq::SliceRandom;
-
+use crate::effect::Effect;
 use bevy::prelude::*;
+use bevy_rand::{global::GlobalEntropy, prelude::WyRand};
+use rand::seq::SliceRandom;
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Dice>()
