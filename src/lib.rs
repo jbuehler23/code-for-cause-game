@@ -1,6 +1,7 @@
 pub mod audio;
 #[cfg(feature = "dev")]
 mod dev_tools;
+mod effect;
 mod screens;
 mod theme;
 
@@ -58,7 +59,7 @@ impl Plugin for AppPlugin {
         app.add_loading_state(LoadingState::new(Screen::Loading).continue_to_state(Screen::Title));
 
         // Add other plugins.
-        app.add_plugins((screens::plugin, theme::plugin));
+        app.add_plugins((screens::plugin, theme::plugin, effect::plugin));
 
         // Enable dev tools for dev builds.
         #[cfg(feature = "dev")]
@@ -91,4 +92,12 @@ fn spawn_camera(mut commands: Commands) {
         // for debugging. So it's good to have this here for future-proofing.
         IsDefaultUiCamera,
     ));
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum AssetLoadingError {
+    #[error("{0}")]
+    Io(#[from] std::io::Error),
+    #[error("{0}")]
+    Ron(#[from] ron::error::SpannedError),
 }
