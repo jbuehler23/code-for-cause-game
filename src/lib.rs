@@ -9,9 +9,7 @@ use bevy::{
     audio::{AudioPlugin, Volume},
     prelude::*,
 };
-use bevy_asset_loader::loading_state::{
-    config::LoadingStateConfig, LoadingState, LoadingStateAppExt,
-};
+use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt};
 use screens::Screen;
 
 pub struct AppPlugin;
