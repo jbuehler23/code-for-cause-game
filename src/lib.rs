@@ -1,6 +1,9 @@
 pub mod audio;
+mod creature;
 #[cfg(feature = "dev")]
 mod dev_tools;
+mod dice;
+mod effect;
 mod screens;
 mod theme;
 
@@ -10,6 +13,7 @@ use bevy::{
     prelude::*,
 };
 use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt};
+use bevy_rand::{plugin::EntropyPlugin, prelude::WyRand};
 use screens::Screen;
 
 pub struct AppPlugin;
@@ -54,11 +58,14 @@ impl Plugin for AppPlugin {
                 }),
         );
 
+        // Global RNG
+        app.add_plugins(EntropyPlugin::<WyRand>::default());
+
         // Init the loading state for assets that can later be used with `configure_loading_state`.
         app.add_loading_state(LoadingState::new(Screen::Loading).continue_to_state(Screen::Title));
 
         // Add other plugins.
-        app.add_plugins((screens::plugin, theme::plugin));
+        app.add_plugins((screens::plugin, theme::plugin, effect::plugin, dice::plugin));
 
         // Enable dev tools for dev builds.
         #[cfg(feature = "dev")]
@@ -91,4 +98,12 @@ fn spawn_camera(mut commands: Commands) {
         // for debugging. So it's good to have this here for future-proofing.
         IsDefaultUiCamera,
     ));
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum AssetLoadingError {
+    #[error("{0}")]
+    Io(#[from] std::io::Error),
+    #[error("{0}")]
+    Ron(#[from] ron::error::SpannedError),
 }
