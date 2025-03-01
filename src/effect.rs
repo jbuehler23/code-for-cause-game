@@ -13,18 +13,18 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(Asset, Reflect)]
 pub struct Effect {
-    icon: Handle<Image>,
-    action: EffectAction,
+    pub icon: Handle<Image>,
+    pub action: EffectAction,
 }
 
-#[derive(Reflect, Deserialize, Serialize)]
-struct EffectAction {
-    kind: ActionKind,
-    value: u32,
+#[derive(Reflect, Deserialize, Serialize, Debug)]
+pub struct EffectAction {
+    pub kind: ActionKind,
+    pub value: u32,
 }
 
-#[derive(Reflect, Deserialize, Serialize)]
-enum ActionKind {
+#[derive(Reflect, Deserialize, Serialize, Debug)]
+pub enum ActionKind {
     Damage,
     Heal,
 }
