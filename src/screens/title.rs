@@ -13,20 +13,27 @@ fn spawn_title_screen(mut commands: Commands) {
         .ui_root()
         .insert(StateScoped(Screen::Title))
         .with_children(|children| {
-            children.button("Play").observe(enter_gameplay_screen);
-            children.button("Credits").observe(enter_credits_screen);
+            children.button("Play").observe(enter_gameplay);
+            children.button("Credits").observe(enter_credits);
+
+            #[cfg(feature = "dev")]
+            children.button("Prototypes").observe(enter_prototypes);
 
             #[cfg(not(target_family = "wasm"))]
             children.button("Exit").observe(exit_app);
         });
 }
 
-fn enter_gameplay_screen(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<Screen>>) {
+fn enter_gameplay(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<Screen>>) {
     next_screen.set(Screen::Gameplay);
 }
 
-fn enter_credits_screen(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<Screen>>) {
+fn enter_credits(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<Screen>>) {
     next_screen.set(Screen::Credits);
+}
+
+fn enter_prototypes(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<Screen>>) {
+    next_screen.set(Screen::Prototypes);
 }
 
 #[cfg(not(target_family = "wasm"))]

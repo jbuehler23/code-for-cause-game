@@ -3,12 +3,16 @@
 mod credits;
 mod gameplay;
 mod loading;
+#[cfg(feature = "dev")]
+mod prototypes;
 mod splash;
 mod title;
 
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
+    app.init_state::<Screen>();
+    #[cfg(feature = "dev")]
     app.init_state::<Screen>();
     app.enable_state_scoped_entities::<Screen>();
 
@@ -19,9 +23,13 @@ pub(super) fn plugin(app: &mut App) {
         splash::plugin,
         title::plugin,
     ));
+
+    #[cfg(feature = "dev")]
+    app.add_plugins(prototypes::plugin);
 }
 
 /// The game's main screen states.
+#[cfg(not(feature = "dev"))]
 #[derive(States, Debug, Hash, PartialEq, Eq, Clone, Default)]
 pub enum Screen {
     #[default]
@@ -30,4 +38,16 @@ pub enum Screen {
     Title,
     Credits,
     Gameplay,
+}
+
+#[cfg(feature = "dev")]
+#[derive(States, Debug, Hash, PartialEq, Eq, Clone, Default)]
+pub enum Screen {
+    #[default]
+    Splash,
+    Loading,
+    Title,
+    Credits,
+    Gameplay,
+    Prototypes,
 }
