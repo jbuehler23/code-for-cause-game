@@ -25,7 +25,6 @@ enum PrototypesButton {
 #[source(Screen = Screen::Prototypes)]
 pub enum PrototypesState {
     #[default]
-    None,
     Main,
     Battle,
     Dialog,
@@ -78,7 +77,6 @@ fn on_button(
             PrototypesButton::Battle => next_state.set(PrototypesState::Battle),
             PrototypesButton::Dialog => next_state.set(PrototypesState::Dialog),
             PrototypesButton::Title => {
-                next_state.set(PrototypesState::None);
                 next_screen.set(Screen::Title);
             }
         }

@@ -4,8 +4,6 @@ use bevy::prelude::*;
 
 use crate::{screens::Screen, theme::prelude::*};
 
-use super::prototypes;
-
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Title), spawn_title_screen);
 }
@@ -34,13 +32,8 @@ fn enter_credits(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<S
     next_screen.set(Screen::Credits);
 }
 
-fn enter_prototypes(
-    _trigger: Trigger<OnPress>,
-    mut next_screen: ResMut<NextState<Screen>>,
-    mut next_prototype_screen: ResMut<NextState<prototypes::PrototypesState>>,
-) {
+fn enter_prototypes(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<Screen>>) {
     next_screen.set(Screen::Prototypes);
-    next_prototype_screen.set(prototypes::PrototypesState::Main);
 }
 
 #[cfg(not(target_family = "wasm"))]

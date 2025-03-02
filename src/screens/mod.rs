@@ -15,7 +15,6 @@ pub(super) fn plugin(app: &mut App) {
     app.init_state::<Screen>();
     #[cfg(feature = "dev")]
     app.init_state::<Screen>()
-        .init_state::<prototypes::PrototypesState>()
         .add_sub_state::<prototypes::PrototypesState>()
         .enable_state_scoped_entities::<prototypes::PrototypesState>();
     app.enable_state_scoped_entities::<Screen>();
