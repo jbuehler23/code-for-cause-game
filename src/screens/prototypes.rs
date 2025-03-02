@@ -12,6 +12,9 @@ pub(super) fn plugin(app: &mut App) {
         return_to_main
             .run_if(in_state(Screen::Prototypes).and(input_just_pressed(KeyCode::Escape))),
     );
+
+    app.add_sub_state::<PrototypesState>()
+        .enable_state_scoped_entities::<PrototypesState>();
 }
 
 #[derive(Component, Debug)]

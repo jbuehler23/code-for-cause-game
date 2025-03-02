@@ -11,12 +11,9 @@ mod title;
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    #[cfg(not(feature = "dev"))]
     app.init_state::<Screen>();
     #[cfg(feature = "dev")]
-    app.init_state::<Screen>()
-        .add_sub_state::<prototypes::PrototypesState>()
-        .enable_state_scoped_entities::<prototypes::PrototypesState>();
+    app.init_state::<Screen>();
     app.enable_state_scoped_entities::<Screen>();
 
     app.add_plugins((
