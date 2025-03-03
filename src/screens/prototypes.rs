@@ -5,7 +5,7 @@ use crate::theme::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(PrototypesState::Main), setup);
-
+    app.add_systems(OnEnter(PrototypesState::Battle), setup_battle_prototype);
     app.add_systems(
         Update,
         // TODO: open pause menu instead of returning
@@ -88,4 +88,17 @@ fn on_button(
 
 fn return_to_main(mut next_screen: ResMut<NextState<PrototypesState>>) {
     next_screen.set(PrototypesState::Main);
+}
+
+fn setup_battle_prototype(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let texture_handle = asset_server.load("images/battle_prototype.png");
+    commands.spawn((
+        Sprite {
+            image: texture_handle,
+            ..default()
+        },
+        Transform::from_xyz(0.0, 0.0, 0.0),
+        StateScoped(PrototypesState::Battle),
+    ));
+
 }

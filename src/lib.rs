@@ -6,6 +6,7 @@ mod dice;
 mod effect;
 mod screens;
 mod theme;
+mod player;
 
 use bevy::{
     asset::AssetMetaCheck,
