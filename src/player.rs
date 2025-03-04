@@ -33,7 +33,6 @@ pub fn spawn_player(
             view_radius: 100.0,
         },
     ));
-
 }
 
 // System to handle player movement - always moving forward

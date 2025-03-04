@@ -4,9 +4,9 @@ mod creature;
 mod dev_tools;
 mod dice;
 mod effect;
+mod player;
 mod screens;
 mod theme;
-mod player;
 
 use bevy::{
     asset::AssetMetaCheck,

@@ -100,5 +100,4 @@ fn setup_battle_prototype(mut commands: Commands, asset_server: Res<AssetServer>
         Transform::from_xyz(0.0, 0.0, 0.0),
         StateScoped(PrototypesState::Battle),
     ));
-
 }
