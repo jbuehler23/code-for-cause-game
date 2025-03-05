@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use std::collections::HashSet;
 
+use crate::levels::{CurrentLevel, LevelData, WINDOW_HEIGHT, WINDOW_WIDTH};
+
 const GRID_SIZE: f32 = 16.0; // Size of each cell in pixels
 
 #[derive(Resource)]
@@ -44,7 +46,7 @@ pub fn player_movement(
 ) {
     if let Ok((player, mut transform)) = player_query.get_single_mut() {
         let mut movement = Vec2::ZERO;
-        
+
         // Use arrow keys for movement
         if input.pressed(KeyCode::ArrowLeft) {
             movement.x -= 1.0;
@@ -70,7 +72,11 @@ pub fn player_movement(
 // Update the fog of war system to black out visited areas
 pub fn update_fog_of_war(
     player_query: Query<(&Player, &Transform)>,
-    mut fog_query: Query<(&mut FogOfWar, &Transform, &mut MeshMaterial2d<ColorMaterial>)>,
+    mut fog_query: Query<(
+        &mut FogOfWar,
+        &Transform,
+        &mut MeshMaterial2d<ColorMaterial>,
+    )>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut explored_areas: ResMut<ExploredAreas>,
 ) {
@@ -90,7 +96,9 @@ pub fn update_fog_of_war(
                 explored_areas.visited.insert(grid_coords);
 
                 // Update material color to black out visited area
-                *material = materials.add(ColorMaterial::from(Color::srgba(0.0, 0.0, 0.0, 0.8))).into();
+                *material = materials
+                    .add(ColorMaterial::from(Color::srgba(0.0, 0.0, 0.0, 0.8)))
+                    .into();
             }
         }
     }
@@ -112,23 +120,22 @@ pub fn spawn_fog_of_war(
                 MeshMaterial2d(materials.add(ColorMaterial::from(Color::NONE))), // Start transparent
                 Transform::from_xyz(x as f32 * fog_size, y as f32 * fog_size, 0.5) // Slightly above other elements
                     .with_scale(Vec3::splat(fog_size)),
-                FogOfWar { 
-                    visited: false,
-                },
+                FogOfWar { visited: false },
             ));
         }
     }
 }
 
-// Camera follow system
 pub fn camera_follow(
     player_query: Query<&Transform, With<Player>>,
-    mut camera_query: Query<&mut Transform, (With<Camera2d>, Without<Player>)>,
+    mut camera_query: Query<&mut Transform, (With<Camera>, Without<Player>)>, // Added Without<Player>
 ) {
-    if let Ok(player_transform) = player_query.get_single() {
-        if let Ok(mut camera_transform) = camera_query.get_single_mut() {
-            camera_transform.translation.x = player_transform.translation.x;
-            camera_transform.translation.y = player_transform.translation.y;
-        }
+    if let (Ok(player_transform), Ok(mut camera_transform)) = (
+        player_query.get_single(),
+        camera_query.get_single_mut()
+    ) {
+        camera_transform.translation.x = player_transform.translation.x;
+        camera_transform.translation.y = player_transform.translation.y;
+        camera_transform.translation.z = 999.9; // Keep camera above other entities
     }
 }

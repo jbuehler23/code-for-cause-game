@@ -2,8 +2,10 @@ pub mod audio;
 mod creature;
 #[cfg(feature = "dev")]
 mod dev_tools;
+mod dialogue;
 mod dice;
 mod effect;
+mod levels;
 mod player;
 mod screens;
 mod theme;
@@ -15,6 +17,7 @@ use bevy::{
 };
 use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt};
 use bevy_rand::{plugin::EntropyPlugin, prelude::WyRand};
+use levels::{WINDOW_HEIGHT, WINDOW_WIDTH};
 use screens::Screen;
 
 pub struct AppPlugin;
@@ -42,6 +45,8 @@ impl Plugin for AppPlugin {
                 })
                 .set(WindowPlugin {
                     primary_window: Window {
+                        resolution: (WINDOW_WIDTH, WINDOW_HEIGHT).into(),
+                        resizable: false,
                         title: "Code For Cause Game".to_string(),
                         canvas: Some("#bevy".to_string()),
                         fit_canvas_to_parent: true,
@@ -66,7 +71,13 @@ impl Plugin for AppPlugin {
         app.add_loading_state(LoadingState::new(Screen::Loading).continue_to_state(Screen::Title));
 
         // Add other plugins.
-        app.add_plugins((screens::plugin, theme::plugin, effect::plugin, dice::plugin));
+        app.add_plugins((
+            screens::plugin,
+            theme::plugin,
+            effect::plugin,
+            dice::plugin,
+            dialogue::plugin,
+        ));
 
         // Enable dev tools for dev builds.
         #[cfg(feature = "dev")]
