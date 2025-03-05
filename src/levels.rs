@@ -71,8 +71,7 @@ pub fn spawn_current_level(
     commands.spawn((
         Mesh2d(meshes.add(Rectangle::default())),
         MeshMaterial2d(materials.add(Color::srgba(1.0, 1.0, 1.0, 0.1))),
-        Transform::from_xyz(0.0, 0.0, -0.1)
-            .with_scale(level.bounds.extend(1.0)),
+        Transform::from_xyz(0.0, 0.0, -0.1).with_scale(level.bounds.extend(1.0)),
         LevelBounds { min, max },
     ));
 }
@@ -98,13 +97,16 @@ pub fn enforce_level_bounds(
     mut player_query: Query<&mut Transform, With<Player>>,
     bounds_query: Query<&LevelBounds>,
 ) {
-    if let (Ok(mut player_transform), Ok(bounds)) = (
-        player_query.get_single_mut(),
-        bounds_query.get_single()
-    ) {
-        player_transform.translation.x = player_transform.translation.x
+    if let (Ok(mut player_transform), Ok(bounds)) =
+        (player_query.get_single_mut(), bounds_query.get_single())
+    {
+        player_transform.translation.x = player_transform
+            .translation
+            .x
             .clamp(bounds.min.x, bounds.max.x);
-        player_transform.translation.y = player_transform.translation.y
+        player_transform.translation.y = player_transform
+            .translation
+            .y
             .clamp(bounds.min.y, bounds.max.y);
     }
 }

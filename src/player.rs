@@ -130,10 +130,9 @@ pub fn camera_follow(
     player_query: Query<&Transform, With<Player>>,
     mut camera_query: Query<&mut Transform, (With<Camera>, Without<Player>)>, // Added Without<Player>
 ) {
-    if let (Ok(player_transform), Ok(mut camera_transform)) = (
-        player_query.get_single(),
-        camera_query.get_single_mut()
-    ) {
+    if let (Ok(player_transform), Ok(mut camera_transform)) =
+        (player_query.get_single(), camera_query.get_single_mut())
+    {
         camera_transform.translation.x = player_transform.translation.x;
         camera_transform.translation.y = player_transform.translation.y;
         camera_transform.translation.z = 999.9; // Keep camera above other entities
