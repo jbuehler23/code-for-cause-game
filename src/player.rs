@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use std::collections::HashSet;
 
-const GRID_SIZE: f32 = 32.0; // Size of each cell in pixels
+const GRID_SIZE: f32 = 16.0; // Size of each cell in pixels
 
 #[derive(Resource)]
 pub struct ExploredAreas {
@@ -43,47 +43,60 @@ pub fn player_movement(
     time: Res<Time>,
 ) {
     if let Ok((player, mut transform)) = player_query.get_single_mut() {
-        // Always move forward
-        let mut movement = Vec2::Y * player.speed * time.delta_secs();
-
-        // Allow left/right strafing
-        if input.pressed(KeyCode::KeyA) {
-            movement += Vec2::NEG_X * player.speed * time.delta_secs();
+        let mut movement = Vec2::ZERO;
+        
+        // Use arrow keys for movement
+        if input.pressed(KeyCode::ArrowLeft) {
+            movement.x -= 1.0;
         }
-        if input.pressed(KeyCode::KeyD) {
-            movement += Vec2::X * player.speed * time.delta_secs();
+        if input.pressed(KeyCode::ArrowRight) {
+            movement.x += 1.0;
+        }
+        if input.pressed(KeyCode::ArrowUp) {
+            movement.y += 1.0;
+        }
+        if input.pressed(KeyCode::ArrowDown) {
+            movement.y -= 1.0;
         }
 
-        transform.translation += movement.extend(0.0);
+        // Normalize and apply movement
+        if movement != Vec2::ZERO {
+            movement = movement.normalize() * player.speed * time.delta_secs();
+            transform.translation += movement.extend(0.0);
+        }
     }
 }
 
-// System to update fog of war based on player position
+// Update the fog of war system to black out visited areas
 pub fn update_fog_of_war(
     player_query: Query<(&Player, &Transform)>,
-    mut fog_query: Query<(&mut FogOfWar, &Transform)>,
+    mut fog_query: Query<(&mut FogOfWar, &Transform, &mut MeshMaterial2d<ColorMaterial>)>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
     mut explored_areas: ResMut<ExploredAreas>,
 ) {
     if let Ok((player, player_transform)) = player_query.get_single() {
-        for (mut fog, fog_transform) in fog_query.iter_mut() {
+        for (mut fog, fog_transform, mut material) in fog_query.iter_mut() {
             let distance = fog_transform
                 .translation
                 .distance(player_transform.translation);
 
-            // Mark tiles as visited if within player's view radius
-            if distance <= player.view_radius {
+            if distance <= player.view_radius && !fog.visited {
+                // Only update when first visiting an area
                 fog.visited = true;
                 let grid_coords = (
                     (fog_transform.translation.x / GRID_SIZE) as i32,
                     (fog_transform.translation.y / GRID_SIZE) as i32,
                 );
                 explored_areas.visited.insert(grid_coords);
+
+                // Update material color to black out visited area
+                *material = materials.add(ColorMaterial::from(Color::srgba(0.0, 0.0, 0.0, 0.8))).into();
             }
         }
     }
 }
 
-// System to spawn fog of war grid
+// Modify spawn_fog_of_war to start with transparent fog
 pub fn spawn_fog_of_war(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -96,10 +109,12 @@ pub fn spawn_fog_of_war(
         for y in 0..grid_size {
             commands.spawn((
                 Mesh2d(meshes.add(Rectangle::default())),
-                MeshMaterial2d(materials.add(Color::BLACK)),
-                Transform::from_xyz(x as f32 * fog_size, y as f32 * fog_size, 0.0)
+                MeshMaterial2d(materials.add(ColorMaterial::from(Color::NONE))), // Start transparent
+                Transform::from_xyz(x as f32 * fog_size, y as f32 * fog_size, 0.5) // Slightly above other elements
                     .with_scale(Vec3::splat(fog_size)),
-                FogOfWar { visited: false },
+                FogOfWar { 
+                    visited: false,
+                },
             ));
         }
     }

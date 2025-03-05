@@ -22,16 +22,17 @@ pub(super) fn plugin(app: &mut App) {
         (
             spawn_player,
             spawn_fog_of_war,
-            player_movement,
-            update_fog_of_war,
-            camera_follow,
         ),
     )
     .add_systems(
         Update,
         // TODO: open pause menu instead of returning
-        return_to_title_screen
+        (return_to_title_screen
             .run_if(in_state(Screen::Gameplay).and(input_just_pressed(KeyCode::Escape))),
+            player_movement,
+            update_fog_of_war,
+            camera_follow,
+        )
     );
 }
 
